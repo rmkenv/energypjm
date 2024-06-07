@@ -8,21 +8,21 @@ API_KEY = st.secrets["EIA_API_KEY"]
 # EIA API URL and Parameters
 EIA_API_URL = "https://api.eia.gov/v2/electricity/rto/fuel-type-data/data/"
 
-PARAMS = {
-    "api_key": API_KEY,
-    "frequency": "hourly",
-    "data[0]": "value",
-    "facets[respondent][]": "PJM",
-    "start": "2024-06-01T00",
-    "sort[0][column]": "period",
-    "sort[0][direction]": "desc",
-    "offset": 0,
-    "length": 5000
-}
-
 # Function to fetch data from EIA API
-def fetch_data():
-    response = requests.get(EIA_API_URL, params=PARAMS)
+def fetch_data(start_date, end_date):
+    params = {
+        "api_key": API_KEY,
+        "frequency": "hourly",
+        "data[0]": "value",
+        "facets[respondent][]": "PJM",
+        "start": start_date,
+        "end": end_date,
+        "sort[0][column]": "period",
+        "sort[0][direction]": "desc",
+        "offset": 0,
+        "length": 5000
+    }
+    response = requests.get(EIA_API_URL, params=params)
     if response.status_code == 200:
         return response.json()
     else:
@@ -33,8 +33,16 @@ def fetch_data():
 def main():
     st.title("EIA Electricity Data Viewer")
     
+    # Date input widgets
+    start_date = st.date_input("Start date", pd.to_datetime("2024-06-01"))
+    end_date = st.date_input("End date", pd.to_datetime("2024-06-02"))
+    
+    if start_date > end_date:
+        st.error("Error: End date must fall after start date.")
+        return
+    
     st.write("Fetching data from EIA API...")
-    data = fetch_data()
+    data = fetch_data(start_date.strftime("%Y-%m-%dT%H"), end_date.strftime("%Y-%m-%dT%H"))
     
     if data:
         df = pd.DataFrame(data['response']['data'])
