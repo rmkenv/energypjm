@@ -39,7 +39,12 @@ def main():
     if data:
         df = pd.DataFrame(data['response']['data'])
         st.write("Data fetched successfully!")
-        st.dataframe(df)
+        
+        # Convert 'period' to datetime
+        df['period'] = pd.to_datetime(df['period'])
+        
+        # Plot the data
+        st.line_chart(df.set_index('period')['value'])
     else:
         st.write("No data available.")
 
