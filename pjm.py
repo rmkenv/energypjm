@@ -46,8 +46,20 @@ def main():
         # Rename 'value' column to avoid conflicts
         df.rename(columns={'value': 'energy_value'}, inplace=True)
         
+        # Get unique sources of energy generation
+        sources = df['fueltype'].unique()
+        
+        # Allow users to select sources to display
+        selected_sources = st.multiselect("Select energy sources to display", sources, default=sources)
+        
+        # Filter data based on selected sources
+        filtered_df = df[df['fueltype'].isin(selected_sources)]
+        
+        # Pivot the data to have 'period' as index and 'fueltype' as columns
+        pivot_df = filtered_df.pivot(index='period', columns='fueltype', values='energy_value')
+        
         # Plot the data
-        st.line_chart(df.set_index('period')['energy_value'])
+        st.line_chart(pivot_df)
     else:
         st.write("No data available.")
 
