@@ -31,7 +31,7 @@ def fetch_data(start_date, end_date):
 
 # Streamlit app
 def main():
-    st.title("EIA Electricity Data Viewer for PJM")
+    st.title("EIA Electricity Data Viewer")
     
     # Date input widgets
     start_date = st.date_input("Start date", pd.to_datetime("2024-06-01"))
@@ -66,11 +66,20 @@ def main():
         # Pivot the data to have 'period' as index and 'fueltype' as columns
         pivot_df = filtered_df.pivot(index='period', columns='fueltype', values='energy_value')
         
+        # Allow users to select sorting order
+        sort_order = st.radio("Sort by total energy generation", ("Ascending", "Descending"))
+        
+        # Sort the columns based on total energy generation
+        if sort_order == "Ascending":
+            pivot_df = pivot_df[pivot_df.sum().sort_values().index]
+        else:
+            pivot_df = pivot_df[pivot_df.sum().sort_values(ascending=False).index]
+        
         # Plot the data as a bar chart
         st.bar_chart(pivot_df)
         
         # Add a title for the chart
-        st.subheader("Energy Generation (Megawatt hours)")
+        st.subheader("Energy Generation (Megawatts)")
         
         # Display the data table
         st.dataframe(pivot_df)
