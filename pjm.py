@@ -35,6 +35,21 @@ def fetch_data(start_date, end_date):
 def main():
     st.title("EIA Electricity Data Viewer for PJM Grid")
     
+    # Explanation of energy sources
+    st.markdown("""
+    **Energy Source Abbreviations:**
+    - **NG**: Natural Gas
+    - **WAT**: Hydropower
+    - **COL**: Coal
+    - **NUC**: Nuclear
+    - **WND**: Wind
+    - **SUN**: Solar
+    - **OIL**: Oil
+    - **OTH**: Other
+
+    For more information, visit: [EIA](https://www.eia.gov)
+    """)
+    
     # Date input widgets
     start_date = st.date_input("Start date", pd.to_datetime("2024-06-01"))
     end_date = st.date_input("End date", datetime.today())
