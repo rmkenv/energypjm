@@ -31,7 +31,7 @@ def fetch_data(start_date, end_date):
 
 # Streamlit app
 def main():
-    st.title("EIA Electricity Data Viewer")
+    st.title("EIA Electricity Data Viewer for PJM")
     
     # Date input widgets
     start_date = st.date_input("Start date", pd.to_datetime("2024-06-01"))
@@ -66,11 +66,11 @@ def main():
         # Pivot the data to have 'period' as index and 'fueltype' as columns
         pivot_df = filtered_df.pivot(index='period', columns='fueltype', values='energy_value')
         
-        # Plot the data
-        st.line_chart(pivot_df)
+        # Plot the data as a bar chart
+        st.bar_chart(pivot_df)
         
         # Add a title for the chart
-        st.subheader("Energy Generation (Megawatts)")
+        st.subheader("Energy Generation (Megawatt hours)")
         
         # Display the data table
         st.dataframe(pivot_df)
