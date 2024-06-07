@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import pandas as pd
+import altair as alt
 
 # Read API key from Streamlit secrets
 API_KEY = st.secrets["EIA_API_KEY"]
@@ -52,7 +53,7 @@ def main():
         df['period'] = pd.to_datetime(df['period'])
         
         # Rename 'value' column to avoid conflicts
-        df.rename(columns={'value': 'energy_value'}, inplace=True)
+        df.rename(columns={'value': 'MWH'}, inplace=True)
         
         # Get unique sources of energy generation
         sources = df['fueltype'].unique()
@@ -64,7 +65,7 @@ def main():
         filtered_df = df[df['fueltype'].isin(selected_sources)]
         
         # Pivot the data to have 'period' as index and 'fueltype' as columns
-        pivot_df = filtered_df.pivot(index='period', columns='fueltype', values='energy_value')
+        pivot_df = filtered_df.pivot(index='period', columns='fueltype', values='MWH')
         
         # Allow users to select sorting order
         sort_order = st.radio("Sort by total energy generation", ("Ascending", "Descending"))
@@ -75,11 +76,26 @@ def main():
         else:
             pivot_df = pivot_df[pivot_df.sum().sort_values(ascending=False).index]
         
-        # Plot the data as a bar chart
-        st.bar_chart(pivot_df)
+        # Reset index to use 'period' as a column for Altair
+        pivot_df.reset_index(inplace=True)
         
-        # Add a title for the chart
-        st.subheader("Energy Generation (Megawatts)")
+        # Melt the DataFrame for Altair
+        melted_df = pivot_df.melt(id_vars=['period'], var_name='fueltype', value_name='MWH')
+        
+        # Create the Altair bar chart
+        chart = alt.Chart(melted_df).mark_bar().encode(
+            x='period:T',
+            y='MWH:Q',
+            color='fueltype:N',
+            tooltip=['period:T', 'fueltype:N', 'MWH:Q']
+        ).properties(
+            title='Energy Generation (Megawatts)',
+            width=800,
+            height=400
+        ).interactive()
+        
+        # Display the chart
+        st.altair_chart(chart, use_container_width=True)
         
         # Display the data table
         st.dataframe(pivot_df)
