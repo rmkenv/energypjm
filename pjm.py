@@ -43,8 +43,11 @@ def main():
         # Convert 'period' to datetime
         df['period'] = pd.to_datetime(df['period'])
         
+        # Rename 'value' column to avoid conflicts
+        df.rename(columns={'value': 'energy_value'}, inplace=True)
+        
         # Plot the data
-        st.line_chart(df.set_index('period')['value'])
+        st.line_chart(df.set_index('period')['energy_value'])
     else:
         st.write("No data available.")
 
