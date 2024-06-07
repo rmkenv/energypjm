@@ -68,6 +68,21 @@ def main():
         
         # Plot the data
         st.line_chart(pivot_df)
+        
+        # Add a title for the chart
+        st.subheader("Energy Generation (Megawatts)")
+        
+        # Display the data table
+        st.dataframe(pivot_df)
+        
+        # Export to CSV
+        csv = pivot_df.to_csv().encode('utf-8')
+        st.download_button(
+            label="Download data as CSV",
+            data=csv,
+            file_name='energy_data.csv',
+            mime='text/csv',
+        )
     else:
         st.write("No data available.")
 
