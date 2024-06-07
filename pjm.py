@@ -33,7 +33,7 @@ def fetch_data(start_date, end_date):
 
 # Streamlit app
 def main():
-    st.title("EIA Electricity Data Viewer")
+    st.title("EIA Electricity Data Viewer for PJM Grid")
     
     # Date input widgets
     start_date = st.date_input("Start date", pd.to_datetime("2024-06-01"))
