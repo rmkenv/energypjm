@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 import altair as alt
+from datetime import datetime
 
 # Read API key from Streamlit secrets
 API_KEY = st.secrets["EIA_API_KEY"]
@@ -36,7 +37,7 @@ def main():
     
     # Date input widgets
     start_date = st.date_input("Start date", pd.to_datetime("2024-06-01"))
-    end_date = st.date_input("End date", pd.to_datetime("2024-06-02"))
+    end_date = st.date_input("End date", datetime.today())
     
     if start_date > end_date:
         st.error("Error: End date must fall after start date.")
